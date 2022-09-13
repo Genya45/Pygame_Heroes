@@ -13,3 +13,4 @@ class User:
         #   изображение 
         self.image = image
         self.score = 0
+        self.songShot = None
