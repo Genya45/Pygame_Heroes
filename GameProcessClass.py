@@ -3,6 +3,7 @@ import random
 import os
 from EnemyAsteroidClass import EnemyAsteroid
 from UserClass import User
+from math import sin
 
 class MainGame():
     
@@ -15,8 +16,8 @@ class MainGame():
         
         #self.__FONT_PATH__ = 'assets/fonts/solid.ttf'
         self.__FONT_PATH__ = 'assets/fonts/blocked.ttf'
-        self.__FONT_PATH_GAME_OVER__ = 'assets/fonts/AldotheApache.ttf'
-        self.__FONT_PATH_PRESS_KEY__ = 'assets/fonts/atari1.ttf'
+        self.__FONT_PATH_GAME_OVER__ = 'assets/fonts/Lato-Black.ttf'
+        self.__FONT_PATH_PRESS_KEY__ = 'assets/fonts/blocked.ttf'
         self.font = None
 
         self.__SONG_SHOT_PATH__ = 'assets/sounds/Shot.mp3'
@@ -37,6 +38,9 @@ class MainGame():
 
         self.flagGameOverSong = False
 
+        self.sinValueY = 0
+        self.sinValue = 0
+        self.sinValueMax = 62
 
         self.bitWinX = self.win.get_size()[0]/20
 
@@ -48,8 +52,10 @@ class MainGame():
         self.curImgBoom = 0
         self.curImgBoomIndex = 0
 
-        sizeUserX = self.win.get_size()[1]/7.68
-        sizeUserY = self.win.get_size()[1]/7.68
+        #sizeUserX = self.win.get_size()[1]/7.68
+        #sizeUserY = self.win.get_size()[1]/7.68
+        sizeUserX = self.win.get_size()[1]/4
+        sizeUserY = self.win.get_size()[1]/4
 
         self.user1 = User(self.bitWinX * 5 - 5 - sizeUserX, self.win.get_size()[1]/2 - sizeUserY/2,
             self.win.get_size()[0], self.win.get_size()[1], 0, sizeUserY, sizeUserX)
@@ -137,7 +143,7 @@ class MainGame():
         self.win.blit(self.imageBackgroundSpace, (0, 0))
 
     def selectMenu(self):
-        text = 'USER 1  ' + str(self.user1.score)
+        text = 'User 1  ' + str(self.user1.score)
         fontScoreDisplay = self.font.render(text , False, (0, 255, 0))
         position = []
         position.append(self.win.get_size()[0]*0.25 - self.font.size(text)[0]/2)
@@ -145,7 +151,7 @@ class MainGame():
         pygame.draw.rect(self.win, (2, 2, 2), (position[0]-5, position[1]-5, self.font.size(text)[0]+10, self.font.size(text)[1]+5)) 
         self.win.blit(fontScoreDisplay, position) 
         
-        text = 'USER 2  ' + str(self.user2.score)
+        text = 'User 2  ' + str(self.user2.score)
         fontScoreDisplay = self.font.render(text , False, (0, 255, 0))
         position = []
         position.append(self.win.get_size()[0]*0.75 - self.font.size(text)[0]/2)
@@ -159,7 +165,7 @@ class MainGame():
         #pygame.draw.rect(self.win, (2, 2, 255), (self.user2.posX, self.user2.posY,
         #    self.user2.width, self.user2.height))
         if self.user1.score - self.user2.score == -self.SCORE_END_GAME:
-            self.win.blit(self.listBoomImages[self.curImgBoom], (self.user1.posX, self.user1.posY))
+            self.win.blit(self.listBoomImages[self.curImgBoom], (self.user1.posX, self.user1.posY + self.sinValueY))
             
             self.curImgBoomIndex += 1
             if self.curImgBoomIndex > 5:
@@ -168,10 +174,10 @@ class MainGame():
                 if self.curImgBoom > len(self.listBoomImages)-1:
                     self.curImgBoom = 0
         else:
-            self.win.blit(self.user1.image, (self.user1.posX, self.user1.posY))
+            self.win.blit(self.user1.image, (self.user1.posX, self.user1.posY + self.sinValueY))
         
         if self.user2.score - self.user1.score == -self.SCORE_END_GAME:
-            self.win.blit(self.listBoomImages[self.curImgBoom], (self.user2.posX, self.user2.posY))
+            self.win.blit(self.listBoomImages[self.curImgBoom], (self.user2.posX, self.user2.posY + self.sinValueY))
             
             self.curImgBoomIndex += 1
             if self.curImgBoomIndex > 5:
@@ -180,36 +186,36 @@ class MainGame():
                 if self.curImgBoom > len(self.listBoomImages)-1:
                     self.curImgBoom = 0
         else:
-            self.win.blit(self.user2.image, (self.user2.posX, self.user2.posY))
+            self.win.blit(self.user2.image, (self.user2.posX, self.user2.posY + self.sinValueY))
 
             
         widthScore1Line = self.bitWinX * (self.SCORE_END_GAME - (self.user2.score - self.user1.score))
         widthScore2Line = self.bitWinX * (self.SCORE_END_GAME - (self.user1.score - self.user2.score))
         widthScore1Line /= (self.SCORE_END_GAME/5)
         widthScore2Line /= (self.SCORE_END_GAME/5)
-        pygame.draw.rect(self.win, (255, 2, 2), (self.bitWinX * 5, self.win.get_size()[1]/2 - 10,
-            widthScore1Line, 20))
+        pygame.draw.rect(self.win, (255, 2, 2), (self.bitWinX * 5, self.win.get_size()[1]/2 - 50 + self.sinValueY,
+            widthScore1Line, self.user2.height/3))
         pygame.draw.rect(self.win, (2, 2, 255), (self.bitWinX * 15 - widthScore2Line,
-            self.win.get_size()[1]/2 - 10, widthScore2Line, 20))
+            self.win.get_size()[1]/2 - 50 + self.sinValueY, widthScore2Line, self.user2.height/3))
 
 
     def gameOver(self):
         pygame.draw.rect(self.win, (2, 2, 2), (self.bitWinX*5, self.win.get_size()[1]/4, 
                 self.bitWinX*10, 2*self.win.get_size()[1]/4))
         if self.user1.score - self.user2.score > 0:
-            text = 'USER 1 WIN '
+            text = 'ПЕРЕМІГ ГРАВЕЦЬ 1'
         else:
-            text = 'USER 2 WIN '
+            text = 'ПЕРЕМІГ ГРАВЕЦЬ 2'
         #self.font.size
         # = pygame.transform.scale(self.enemyAsteroidList[-1].image, (self.enemyAsteroidList[-1].radius*2, self.enemyAsteroidList[-1].radius*2))
-        font = pygame.font.Font(self.__FONT_PATH_GAME_OVER__, int(self.win.get_size()[1]/10))
+        font = pygame.font.Font(self.__FONT_PATH_GAME_OVER__, int(self.win.get_size()[1]/15))
         fontScoreDisplay = font.render(text , False, (0, 255, 0))
         position = []
         position.append(self.win.get_size()[0]/2 - font.size(text)[0]/2)
         position.append(self.win.get_size()[1]/2 - font.size(text)[1]/2) 
         self.win.blit(fontScoreDisplay, position) 
 
-        text = "Press Enter or Exit"
+        text = "Press Enter or Esc"
         font = pygame.font.Font(self.__FONT_PATH_PRESS_KEY__, int(self.win.get_size()[1]/20))
         fontScoreDisplay = font.render(text , False, (0, 255, 0))
         position = []
@@ -220,6 +226,11 @@ class MainGame():
 
 
     def updateDisplay(self):
+        self.sinValueY = 10*sin(self.sinValue/10)
+        self.sinValue += 1
+        if self.sinValue > self.sinValueMax:
+            self.sinValue = 0 
+
         self.updateBackgroundImage()
         self.selectMenu()   
         self.enemyAsteroidUpdated()
