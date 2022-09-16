@@ -12,8 +12,12 @@ class Menu():
         self.isRunMainLoop = True
 
         
-        self.__FONT_PATH__ = 'assets/fonts/solid.ttf'
+        self.__FONT_PATH__ = 'assets/fonts/Lato-Black.ttf'
         self.font = None
+        #self.__TEXT_PRESS_ESC_TO_EXIT__ = 'PRESS ESC TO EXIT'
+        #self.__TEXT_PRESS_ENTER_TO_START_GAME__ = 'PRESS ENTER TO START GAME'
+        self.__TEXT_PRESS_ESC_TO_EXIT__ = 'НАЖМИТЕ ESC ЧТОБЫ ВЫЙТИ'
+        self.__TEXT_PRESS_ENTER_TO_START_GAME__ = 'НАЖМИТЕ ENTER ДЛЯ НАЧАЛА ИГРЫ'
 
         
         self.__IMG_PATH_BKG_SPACE__ = "assets/images/backgrounds/"     
@@ -96,13 +100,18 @@ class Menu():
                     self.isStartGame = True
                     pygame.mixer.music.stop()
                     break
+                if event.key == pygame.K_SPACE:
+                    self.isRunMainLoop = False
+                    self.isStartGame = True
+                    pygame.mixer.music.stop()
+                    break
 
 
     def updateBackgroundImage(self):
         self.win.blit(self.imageBackgroundSpace, (0, 0))
 
     def selectMenu(self):
-        text = 'PRESS ESC TO EXIT'
+        text = self.__TEXT_PRESS_ESC_TO_EXIT__
         fontScoreDisplay = self.font.render(text , False, (0, 255, 0))
         position = []
         position.append(self.win.get_size()[0]/2 - self.font.size(text)[0]/2)
@@ -110,7 +119,7 @@ class Menu():
         pygame.draw.rect(self.win, (2, 2, 2), (position[0]-5, position[1]-5, self.font.size(text)[0]+10, self.font.size(text)[1]+5)) 
         self.win.blit(fontScoreDisplay, position) 
         
-        text = 'PRESS ENTER TO START GAME'
+        text = self.__TEXT_PRESS_ENTER_TO_START_GAME__
         fontScoreDisplay = self.font.render(text , False, (0, 255, 0))
         position = []
         position.append(self.win.get_size()[0]/2 - self.font.size(text)[0]/2)

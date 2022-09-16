@@ -15,10 +15,15 @@ class MainGame():
 
         
         #self.__FONT_PATH__ = 'assets/fonts/solid.ttf'
-        self.__FONT_PATH__ = 'assets/fonts/blocked.ttf'
+        self.__FONT_PATH__ = 'assets/fonts/Lato-Black.ttf'
         self.__FONT_PATH_GAME_OVER__ = 'assets/fonts/Lato-Black.ttf'
-        self.__FONT_PATH_PRESS_KEY__ = 'assets/fonts/blocked.ttf'
+        self.__FONT_PATH_PRESS_KEY__ = 'assets/fonts/Lato-Black.ttf'
         self.font = None
+        self.username1 = "Игрок 1"
+        self.username2 = "Игрок 2"        
+        self.__TEXT_PRESS_ESC_TO_EXIT__ = 'НАЖМИТЕ ESC ЧТОБЫ ВЫЙТИ'
+        self.__TEXT_USER_WIN__ = 'ПОБЕДИЛ '
+        
 
         self.__SONG_SHOT_PATH__ = 'assets/sounds/Shot.mp3'
         self.songBoom = None
@@ -126,10 +131,7 @@ class MainGame():
                     self.isRunMainLoop = False
                     self.isCloseGame = True
                     break
-                if event.key == pygame.K_RETURN:
-                    self.isRunMainLoop = False
-                    self.isStartGame = True
-                    break
+                    
                 if abs(self.user1.score - self.user2.score) != self.SCORE_END_GAME:
                     if event.key == pygame.K_1:
                         self.user1.score += 1
@@ -143,7 +145,7 @@ class MainGame():
         self.win.blit(self.imageBackgroundSpace, (0, 0))
 
     def selectMenu(self):
-        text = 'User 1  ' + str(self.user1.score)
+        text = self.username1 + ': ' + str(self.user1.score)
         fontScoreDisplay = self.font.render(text , False, (0, 255, 0))
         position = []
         position.append(self.win.get_size()[0]*0.25 - self.font.size(text)[0]/2)
@@ -151,7 +153,7 @@ class MainGame():
         pygame.draw.rect(self.win, (2, 2, 2), (position[0]-5, position[1]-5, self.font.size(text)[0]+10, self.font.size(text)[1]+5)) 
         self.win.blit(fontScoreDisplay, position) 
         
-        text = 'User 2  ' + str(self.user2.score)
+        text = self.username2 + ': ' + str(self.user2.score)
         fontScoreDisplay = self.font.render(text , False, (0, 255, 0))
         position = []
         position.append(self.win.get_size()[0]*0.75 - self.font.size(text)[0]/2)
@@ -203,9 +205,9 @@ class MainGame():
         pygame.draw.rect(self.win, (2, 2, 2), (self.bitWinX*5, self.win.get_size()[1]/4, 
                 self.bitWinX*10, 2*self.win.get_size()[1]/4))
         if self.user1.score - self.user2.score > 0:
-            text = 'ПЕРЕМІГ ГРАВЕЦЬ 1'
+            text = self.__TEXT_USER_WIN__ + self.username1
         else:
-            text = 'ПЕРЕМІГ ГРАВЕЦЬ 2'
+            text = self.__TEXT_USER_WIN__ + self.username2
         #self.font.size
         # = pygame.transform.scale(self.enemyAsteroidList[-1].image, (self.enemyAsteroidList[-1].radius*2, self.enemyAsteroidList[-1].radius*2))
         font = pygame.font.Font(self.__FONT_PATH_GAME_OVER__, int(self.win.get_size()[1]/15))
@@ -215,8 +217,8 @@ class MainGame():
         position.append(self.win.get_size()[1]/2 - font.size(text)[1]/2) 
         self.win.blit(fontScoreDisplay, position) 
 
-        text = "Press Enter or Esc"
-        font = pygame.font.Font(self.__FONT_PATH_PRESS_KEY__, int(self.win.get_size()[1]/20))
+        text = self.__TEXT_PRESS_ESC_TO_EXIT__
+        font = pygame.font.Font(self.__FONT_PATH_PRESS_KEY__, int(self.win.get_size()[1]/25))
         fontScoreDisplay = font.render(text , False, (0, 255, 0))
         position = []
         position.append(self.win.get_size()[0]/2 - font.size(text)[0]/2)
