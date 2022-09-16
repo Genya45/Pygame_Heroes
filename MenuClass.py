@@ -10,6 +10,7 @@ class Menu():
     def __init__(self, win):        
         self.win = win
         self.isRunMainLoop = True
+        self.isPrintUsersScore = True
 
         
         self.__FONT_PATH__ = 'assets/fonts/Lato-Black.ttf'
@@ -98,11 +99,13 @@ class Menu():
                 if event.key == pygame.K_RETURN:
                     self.isRunMainLoop = False
                     self.isStartGame = True
+                    self.isPrintUsersScore = True
                     pygame.mixer.music.stop()
                     break
                 if event.key == pygame.K_SPACE:
                     self.isRunMainLoop = False
                     self.isStartGame = True
+                    self.isPrintUsersScore = False
                     pygame.mixer.music.stop()
                     break
 

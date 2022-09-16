@@ -30,7 +30,7 @@ def initGameProcess(win):
         if menu.isCloseGame:
             break
 
-        mainGame = MainGame(win, menu.imageBackgroundSpace)    #   инициализация класса игрового процесса        
+        mainGame = MainGame(win, menu.imageBackgroundSpace, menu.isPrintUsersScore)    #   инициализация класса игрового процесса        
         while mainGame.isRunMainLoop:  #   цикл обновления игрового процесса
             pygame.time.delay(FPS)
             mainGame.main_process_update()     #   обновление игрового процесса

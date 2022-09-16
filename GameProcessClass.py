@@ -8,11 +8,12 @@ from math import sin
 class MainGame():
     
 
-    def __init__(self, win, imageBackgroundSpace):        
+    def __init__(self, win, imageBackgroundSpace, isPrintUsersScore):        
         self.win = win        
         self.imageBackgroundSpace = imageBackgroundSpace
         self.isRunMainLoop = True
-
+        
+        self.isPrintUsersScore = isPrintUsersScore
         
         #self.__FONT_PATH__ = 'assets/fonts/solid.ttf'
         self.__FONT_PATH__ = 'assets/fonts/Lato-Black.ttf'
@@ -23,6 +24,7 @@ class MainGame():
         self.username2 = "Игрок 2"        
         self.__TEXT_PRESS_ESC_TO_EXIT__ = 'НАЖМИТЕ ESC ЧТОБЫ ВЫЙТИ'
         self.__TEXT_USER_WIN__ = 'ПОБЕДИЛ '
+
         
 
         self.__SONG_SHOT_PATH__ = 'assets/sounds/Shot.mp3'
@@ -144,7 +146,7 @@ class MainGame():
     def updateBackgroundImage(self):
         self.win.blit(self.imageBackgroundSpace, (0, 0))
 
-    def selectMenu(self):
+    def printScore(self):
         text = self.username1 + ': ' + str(self.user1.score)
         fontScoreDisplay = self.font.render(text , False, (0, 255, 0))
         position = []
@@ -234,7 +236,8 @@ class MainGame():
             self.sinValue = 0 
 
         self.updateBackgroundImage()
-        self.selectMenu()   
+        if self.isPrintUsersScore:
+            self.printScore()   
         self.enemyAsteroidUpdated()
         self.printUsers()
         
