@@ -16,9 +16,9 @@ class MainGame():
         self.isPrintUsersScore = isPrintUsersScore
         
         #self.__FONT_PATH__ = 'assets/fonts/solid.ttf'
-        self.__FONT_PATH__ = 'assets/fonts/Lato-Black.ttf'
-        self.__FONT_PATH_GAME_OVER__ = 'assets/fonts/Lato-Black.ttf'
-        self.__FONT_PATH_PRESS_KEY__ = 'assets/fonts/Lato-Black.ttf'
+        self.__FONT_PATH__ = 'assets/fonts/new/ofont.ru_Sangha.ttf'
+        self.__FONT_PATH_GAME_OVER__ = 'assets/fonts/new/ofont.ru_Ritalin.ttf'
+        self.__FONT_PATH_PRESS_KEY__ = 'assets/fonts/new/ofont.ru_Ritalin.ttf'
         self.font = None
         self.username1 = username1
         self.username2 = username2     
@@ -40,6 +40,9 @@ class MainGame():
         self.enemyAsteroidList = []
         self.asteroidsListImages = []
 
+        self.__IMG_PATH_GAME_OVER__ = "assets/images/GameOver.png"
+        self.imageBannerGameOver = None
+
         self.isStartGame = False
         self.isCloseGame = False
 
@@ -55,12 +58,15 @@ class MainGame():
         self.__IMG_PATH_USER1__ = "assets/images/heroes/user1.png" 
         self.__IMG_PATH_USER2__ = "assets/images/heroes/user2.png" 
         self.__IMG_PATH_BOOM__ = "assets/images/asteroidsBoom/" 
-        self.__IMG_PATH_LASER1__ = "assets/images/lasers/user1/"
-        self.__IMG_PATH_LASER2__ = "assets/images/lasers/user2/"
+        self.__IMG_PATH_LASER1__ = "assets/images/lasers/user11/"
+        self.__IMG_PATH_LASER2__ = "assets/images/lasers/user22/"
+        self.__IMG_PATH_LASER_BOOM__ = "assets/images/lasers/boom/"
         self.countImagesLaser = 0
         self.timeToNextLaserImage = 0
         self.currLaserImage = 0
         self.listBoomImages = []
+        self.listBoomLaserImages = []
+        self.currBoomLaserImage = 0
         self.curImgBoom = 0
         self.curImgBoomIndex = 0
 
@@ -109,6 +115,14 @@ class MainGame():
             imgBoom = pygame.image.load(self.__IMG_PATH_BOOM__ + imgBoom)
             imgBoom = pygame.transform.scale(imgBoom, (self.user1.width,self.user1.height))
             self.listBoomImages.append(imgBoom)
+
+        for imgLaserBoom in os.listdir(self.__IMG_PATH_LASER_BOOM__):
+            imgLaserBoom = pygame.image.load(self.__IMG_PATH_LASER_BOOM__ + imgLaserBoom)
+            imgLaserBoom = pygame.transform.scale(imgLaserBoom, (self.user2.height/2, self.user2.height/2))
+            self.listBoomLaserImages.append(imgLaserBoom)
+        
+        self.imageBannerGameOver = pygame.image.load(self.__IMG_PATH_GAME_OVER__)
+        self.imageBannerGameOver = pygame.transform.scale(self.imageBannerGameOver, (self.bitWinX*10, 2*self.win.get_size()[1]/4))
 
     def songLoader(self):        
         self.songBoom = pygame.mixer.Sound(self.__SONG_BOOM_PATH__)
@@ -166,20 +180,27 @@ class MainGame():
         self.win.blit(self.imageBackgroundSpace, (0, 0))
 
     def printScore(self):
-        text = self.username1 + ': ' + str(self.user1.score)
-        fontScoreDisplay = self.font.render(text , False, (0, 255, 0))
+        if self.isPrintUsersScore:       
+            text = self.username1 + ': ' + str(self.user1.score)
+        else:
+            text = self.username1
+
+        fontScoreDisplay = self.font.render(text , False, (0, 0, 255))
         position = []
         position.append(self.win.get_size()[0]*0.25 - self.font.size(text)[0]/2)
         position.append(self.win.get_size()[1]*0.1)        
-        pygame.draw.rect(self.win, (2, 2, 2), (position[0]-5, position[1]-5, self.font.size(text)[0]+10, self.font.size(text)[1]+5)) 
+        #pygame.draw.rect(self.win, (2, 2, 2), (position[0]-5, position[1]-5, self.font.size(text)[0]+10, self.font.size(text)[1]+5)) 
         self.win.blit(fontScoreDisplay, position) 
         
-        text = self.username2 + ': ' + str(self.user2.score)
-        fontScoreDisplay = self.font.render(text , False, (0, 255, 0))
+        if self.isPrintUsersScore:       
+            text = self.username2 + ': ' + str(self.user2.score)
+        else:
+            text = self.username2
+        fontScoreDisplay = self.font.render(text , False, (255, 0, 0))
         position = []
         position.append(self.win.get_size()[0]*0.75 - self.font.size(text)[0]/2)
         position.append(self.win.get_size()[1]*0.1) 
-        pygame.draw.rect(self.win, (2, 2, 2), (position[0]-5, position[1]-5, self.font.size(text)[0]+10, self.font.size(text)[1]+5)) 
+        #pygame.draw.rect(self.win, (2, 2, 2), (position[0]-5, position[1]-5, self.font.size(text)[0]+10, self.font.size(text)[1]+5)) 
         self.win.blit(fontScoreDisplay, position) 
 
     def printUsers(self):
@@ -218,6 +239,9 @@ class MainGame():
             self.currLaserImage += 1
             if self.currLaserImage >= self.countImagesLaser:
                 self.currLaserImage = 0
+            self.currBoomLaserImage += 1
+            if self.currBoomLaserImage >= len(self.listBoomLaserImages):
+                self.currBoomLaserImage = 0
         widthScore1Line = self.bitWinX * (self.SCORE_END_GAME - (self.user2.score - self.user1.score))
         widthScore2Line = self.bitWinX * (self.SCORE_END_GAME - (self.user1.score - self.user2.score))
         widthScore1Line /= (self.SCORE_END_GAME/5)
@@ -235,18 +259,32 @@ class MainGame():
             (widthScore2Line, self.user2.height/2))
         self.win.blit(laserImage2, (self.bitWinX * 15 - widthScore2Line, self.user2.posY + self.sinValueY))
 
+        #laserBoomImage = pygame.transform.scale(self.listBoomLaserImages[self.currBoomLaserImage], (self.user2.height/2, self.user2.height/2))
+        self.win.blit(self.listBoomLaserImages[self.currBoomLaserImage],  (self.bitWinX * 15 - widthScore2Line - self.user2.height/4, self.user2.posY + self.sinValueY))
+
 
     def gameOver(self):
-        pygame.draw.rect(self.win, (2, 2, 2), (self.bitWinX*5, self.win.get_size()[1]/4, 
-                self.bitWinX*10, 2*self.win.get_size()[1]/4))
-        if self.user1.score - self.user2.score > 0:
-            text = self.__TEXT_USER_WIN__ + self.username1
-        else:
-            text = self.__TEXT_USER_WIN__ + self.username2
+        #pygame.draw.rect(self.win, (2, 2, 2), (self.bitWinX*5, self.win.get_size()[1]/4, 
+        #        self.bitWinX*10, 2*self.win.get_size()[1]/4))
+        self.win.blit(self.imageBannerGameOver, (self.bitWinX*5, self.win.get_size()[1]/4))
         #self.font.size
         # = pygame.transform.scale(self.enemyAsteroidList[-1].image, (self.enemyAsteroidList[-1].radius*2, self.enemyAsteroidList[-1].radius*2))
         font = pygame.font.Font(self.__FONT_PATH_GAME_OVER__, int(self.win.get_size()[1]/15))
-        fontScoreDisplay = font.render(text , False, (0, 255, 0))
+        fontScoreDisplay = font.render(self.__TEXT_USER_WIN__ , False, (0, 255, 0))
+        position = []
+        position.append(self.win.get_size()[0]/2 - font.size(self.__TEXT_USER_WIN__)[0]/2)
+        position.append(self.win.get_size()[1]/4) 
+        self.win.blit(fontScoreDisplay, position)
+
+        text = ''
+        if self.user1.score - self.user2.score > 0:
+            text = self.username1
+            color = (0, 0, 255)
+        else:
+            text = self.username2    
+            color = (255, 0, 0)    
+        #font = pygame.font.Font(self.__FONT_PATH_GAME_OVER__, int(self.win.get_size()[1]/15))
+        fontScoreDisplay = self.font.render(text , False, color)
         position = []
         position.append(self.win.get_size()[0]/2 - font.size(text)[0]/2)
         position.append(self.win.get_size()[1]/2 - font.size(text)[1]/2) 
@@ -269,8 +307,7 @@ class MainGame():
             self.sinValue = 0 
 
         self.updateBackgroundImage()
-        if self.isPrintUsersScore:
-            self.printScore()   
+        self.printScore()   
         self.enemyAsteroidUpdated()
         self.printUsers()
         
