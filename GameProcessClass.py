@@ -52,9 +52,14 @@ class MainGame():
         self.bitWinX = self.win.get_size()[0]/20
 
 
-        self.__IMG_PATH_USER1__ = "assets/images/heroes/Hero1.png" 
-        self.__IMG_PATH_USER2__ = "assets/images/heroes/Hero2.png" 
+        self.__IMG_PATH_USER1__ = "assets/images/heroes/user1.png" 
+        self.__IMG_PATH_USER2__ = "assets/images/heroes/user2.png" 
         self.__IMG_PATH_BOOM__ = "assets/images/asteroidsBoom/" 
+        self.__IMG_PATH_LASER1__ = "assets/images/lasers/user1/"
+        self.__IMG_PATH_LASER2__ = "assets/images/lasers/user2/"
+        self.countImagesLaser = 0
+        self.timeToNextLaserImage = 0
+        self.currLaserImage = 0
         self.listBoomImages = []
         self.curImgBoom = 0
         self.curImgBoomIndex = 0
@@ -78,14 +83,28 @@ class MainGame():
 
 
     def imageLoader(self):        
-        for imageAsteroid in os.listdir(self.__IMG_PATH_ASTEROIDS__):       
-            asteroidImage = pygame.image.load(self.__IMG_PATH_ASTEROIDS__ + imageAsteroid)
-            self.asteroidsListImages.append(asteroidImage)
         self.user1.image = pygame.image.load(self.__IMG_PATH_USER1__)
         self.user1.image = pygame.transform.scale(self.user1.image, (self.user1.width,self.user1.height))
         self.user2.image = pygame.image.load(self.__IMG_PATH_USER2__)
         self.user2.image = pygame.transform.scale(self.user2.image, (self.user2.width,self.user2.height))
+        
+        self.countImagesLaser = len(os.listdir(self.__IMG_PATH_LASER1__))
+        
+        laserImagesList = []
+        for imageLaserUser1 in os.listdir(self.__IMG_PATH_LASER1__):
+            laserImage = pygame.image.load(self.__IMG_PATH_LASER1__ + imageLaserUser1)
+            laserImagesList.append(laserImage)
+        self.user1.laserImageList = laserImagesList
+        laserImagesList = []
+        for imageLaserUser2 in os.listdir(self.__IMG_PATH_LASER2__):
+            laserImage = pygame.image.load(self.__IMG_PATH_LASER2__ + imageLaserUser2)
+            laserImagesList.append(laserImage)
+        self.user2.laserImageList = laserImagesList
 
+
+        for imageAsteroid in os.listdir(self.__IMG_PATH_ASTEROIDS__):       
+            asteroidImage = pygame.image.load(self.__IMG_PATH_ASTEROIDS__ + imageAsteroid)
+            self.asteroidsListImages.append(asteroidImage)
         for imgBoom in os.listdir(self.__IMG_PATH_BOOM__):
             imgBoom = pygame.image.load(self.__IMG_PATH_BOOM__ + imgBoom)
             imgBoom = pygame.transform.scale(imgBoom, (self.user1.width,self.user1.height))
@@ -192,15 +211,29 @@ class MainGame():
         else:
             self.win.blit(self.user2.image, (self.user2.posX, self.user2.posY + self.sinValueY))
 
-            
+        
+        self.timeToNextLaserImage += 1
+        if self.timeToNextLaserImage > 2:
+            self.timeToNextLaserImage = 0
+            self.currLaserImage += 1
+            if self.currLaserImage >= self.countImagesLaser:
+                self.currLaserImage = 0
         widthScore1Line = self.bitWinX * (self.SCORE_END_GAME - (self.user2.score - self.user1.score))
         widthScore2Line = self.bitWinX * (self.SCORE_END_GAME - (self.user1.score - self.user2.score))
         widthScore1Line /= (self.SCORE_END_GAME/5)
         widthScore2Line /= (self.SCORE_END_GAME/5)
-        pygame.draw.rect(self.win, (255, 2, 2), (self.bitWinX * 5, self.win.get_size()[1]/2 - 50 + self.sinValueY,
-            widthScore1Line, self.user2.height/3))
-        pygame.draw.rect(self.win, (2, 2, 255), (self.bitWinX * 15 - widthScore2Line,
-            self.win.get_size()[1]/2 - 50 + self.sinValueY, widthScore2Line, self.user2.height/3))
+        #pygame.draw.rect(self.win, (255, 2, 2), (self.bitWinX * 5, self.win.get_size()[1]/2 - 50 + self.sinValueY,
+        #    widthScore1Line, self.user2.height/3))
+        #pygame.draw.rect(self.win, (2, 2, 255), (self.bitWinX * 15 - widthScore2Line,
+        #    self.win.get_size()[1]/2 - 50 + self.sinValueY, widthScore2Line, self.user2.height/3))
+        
+        laserImage1 = pygame.transform.scale(self.user1.laserImageList[self.currLaserImage], 
+            (widthScore1Line, self.user1.height/2))
+        self.win.blit(laserImage1, (self.bitWinX * 5, self.user1.posY + self.sinValueY))
+
+        laserImage2 = pygame.transform.scale(self.user2.laserImageList[self.currLaserImage], 
+            (widthScore2Line, self.user2.height/2))
+        self.win.blit(laserImage2, (self.bitWinX * 15 - widthScore2Line, self.user2.posY + self.sinValueY))
 
 
     def gameOver(self):

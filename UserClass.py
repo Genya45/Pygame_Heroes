@@ -14,3 +14,4 @@ class User:
         self.image = image
         self.score = 0
         self.songShot = None
+        self.laserImageList = []
