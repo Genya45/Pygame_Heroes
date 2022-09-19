@@ -8,7 +8,7 @@ from math import sin
 class MainGame():
     
 
-    def __init__(self, win, imageBackgroundSpace, isPrintUsersScore):        
+    def __init__(self, win, imageBackgroundSpace, isPrintUsersScore, username1, username2):        
         self.win = win        
         self.imageBackgroundSpace = imageBackgroundSpace
         self.isRunMainLoop = True
@@ -20,8 +20,8 @@ class MainGame():
         self.__FONT_PATH_GAME_OVER__ = 'assets/fonts/Lato-Black.ttf'
         self.__FONT_PATH_PRESS_KEY__ = 'assets/fonts/Lato-Black.ttf'
         self.font = None
-        self.username1 = "Игрок 1"
-        self.username2 = "Игрок 2"        
+        self.username1 = username1
+        self.username2 = username2     
         self.__TEXT_PRESS_ESC_TO_EXIT__ = 'НАЖМИТЕ ESC ЧТОБЫ ВЫЙТИ'
         self.__TEXT_USER_WIN__ = 'ПОБЕДИЛ '
 

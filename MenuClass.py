@@ -7,7 +7,7 @@ from EnemyAsteroidClass import EnemyAsteroid
 class Menu():
     
 
-    def __init__(self, win):        
+    def __init__(self, win, username1, username2):        
         self.win = win
         self.isRunMainLoop = True
         self.isPrintUsersScore = True
@@ -20,6 +20,11 @@ class Menu():
         self.__TEXT_PRESS_ESC_TO_EXIT__ = 'НАЖМИТЕ ESC ЧТОБЫ ВЫЙТИ'
         self.__TEXT_PRESS_ENTER_TO_START_GAME__ = 'НАЖМИТЕ ENTER ДЛЯ НАЧАЛА ИГРЫ'
 
+        self.username1 = username1
+        self.username2 = username2 
+        self.currUserInputName = 1
+        self.timeToLineAfterNameInInput = 0
+        self.flagToLineAfterNameInInput = True
         
         self.__IMG_PATH_BKG_SPACE__ = "assets/images/backgrounds/"     
         self.imageBackgroundSpace = None
@@ -96,22 +101,66 @@ class Menu():
                     self.isCloseGame = True
                     pygame.mixer.music.stop()
                     break
-                if event.key == pygame.K_RETURN:
+                elif event.key == pygame.K_RETURN:
                     self.isRunMainLoop = False
                     self.isStartGame = True
                     self.isPrintUsersScore = True
                     pygame.mixer.music.stop()
                     break
-                if event.key == pygame.K_SPACE:
+                elif event.key == pygame.K_SPACE:
                     self.isRunMainLoop = False
                     self.isStartGame = True
                     self.isPrintUsersScore = False
                     pygame.mixer.music.stop()
                     break
+                elif event.key == pygame.K_1:
+                    self.currUserInputName = 1
+                elif event.key == pygame.K_2:
+                    self.currUserInputName = 2
+                elif event.key == pygame.K_BACKSPACE:
+                    if self.currUserInputName == 1:
+                        if len(self.username1) >= 0:
+                            self.username1 = self.username1[0:-1]
+                    if self.currUserInputName == 2:
+                        if len(self.username2) >= 0:
+                            self.username2 = self.username2[0:-1]
+                else:
+                    if self.currUserInputName == 1:
+                        self.username1 += event.unicode
+                    if self.currUserInputName == 2:
+                        self.username2 += event.unicode
+
 
 
     def updateBackgroundImage(self):
         self.win.blit(self.imageBackgroundSpace, (0, 0))
+
+    def printUsersName(self):
+        self.timeToLineAfterNameInInput += 1
+        if self.timeToLineAfterNameInInput > 20:
+            self.timeToLineAfterNameInInput = 0
+            self.flagToLineAfterNameInInput = not self.flagToLineAfterNameInInput
+
+
+        text = self.username1
+        fontScoreDisplay = self.font.render(text , False, (0, 255, 0))
+        position = []
+        position.append(self.win.get_size()[0]*0.25 - self.font.size(text)[0]/2)
+        position.append(self.win.get_size()[1]*0.1)        
+        pygame.draw.rect(self.win, (2, 2, 2), (position[0]-5, position[1]-5, self.font.size(text)[0]+10, self.font.size(text)[1]+5)) 
+        if self.flagToLineAfterNameInInput and self.currUserInputName == 1:
+            pygame.draw.rect(self.win, (0, 255, 0), (position[0] + self.font.size(text)[0], position[1]-5, 5, self.font.size(text)[1]+5)) 
+        self.win.blit(fontScoreDisplay, position) 
+        
+        text = self.username2
+        fontScoreDisplay = self.font.render(text , False, (0, 255, 0))
+        position = []
+        position.append(self.win.get_size()[0]*0.75 - self.font.size(text)[0]/2)
+        position.append(self.win.get_size()[1]*0.1)        
+        pygame.draw.rect(self.win, (2, 2, 2), (position[0]-5, position[1]-5, self.font.size(text)[0]+10, self.font.size(text)[1]+5)) 
+        if self.flagToLineAfterNameInInput and self.currUserInputName == 2:
+            pygame.draw.rect(self.win, (0, 255, 0), (position[0] + self.font.size(text)[0], position[1]-5, 5, self.font.size(text)[1]+5))         
+        self.win.blit(fontScoreDisplay, position) 
 
     def selectMenu(self):
         text = self.__TEXT_PRESS_ESC_TO_EXIT__
@@ -139,6 +188,7 @@ class Menu():
         self.updateBackgroundImage()
         self.selectMenu()   
         self.enemyAsteroidUpdated()
+        self.printUsersName()
         pygame.display.update()
         
     def main_process_update(self):

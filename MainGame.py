@@ -14,14 +14,17 @@ pygame.mouse.set_visible(False)
 FPS = 10    #   частота обновления кадров
 #clockFPS = pygame.time.Clock()
 
-
+username1 = "Игрок 1"
+username2 = "Игрок 2"  
 
 
 
 #   функция инициализации игрового процеса
 def initGameProcess(win):
+    global username1
+    global username2
     while True:
-        menu = Menu(win)    #   инициализация класса игрового процесса        
+        menu = Menu(win, username1, username2)    #   инициализация класса игрового процесса        
         while menu.isRunMainLoop:  #   цикл обновления игрового процесса
             pygame.time.delay(FPS)
             #clockFPS.tick(FPS) 
@@ -30,7 +33,10 @@ def initGameProcess(win):
         if menu.isCloseGame:
             break
 
-        mainGame = MainGame(win, menu.imageBackgroundSpace, menu.isPrintUsersScore)    #   инициализация класса игрового процесса        
+        username1 = menu.username1
+        username2 = menu.username2
+
+        mainGame = MainGame(win, menu.imageBackgroundSpace, menu.isPrintUsersScore, username1, username2)    #   инициализация класса игрового процесса        
         while mainGame.isRunMainLoop:  #   цикл обновления игрового процесса
             pygame.time.delay(FPS)
             mainGame.main_process_update()     #   обновление игрового процесса
